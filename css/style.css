@@ -1,0 +1,105 @@
+/**********************************
+            PAGE LAYOUT
+***********************************/
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+/* Sliding Vertical Menu */
+.options-box {
+    position: absolute; /* this is key */
+    left: 0;
+    top: 60;
+    z-index: 99; /* make sure it's visible over the map */
+    background: #1d1f20;
+    color: #fff;
+    line-height: 35px;
+    text-align: left;
+    height: 100%;
+    padding: 20px; 
+    overflow: auto; /*prevent div from collapsing becausing of its floating children*/
+}
+
+/* Google Map */
+#map {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0
+}
+
+/* Fixed position header */
+header {
+	width:100%; 
+	background:#181a1b; 
+	height:60px; 
+	line-height:60px;
+}
+
+/**********************************
+        HEADER DETAILS
+***********************************/
+
+.title {
+    margin: 0;
+    text-align: center;
+    color: #fff;
+}
+
+.hamburger{
+  background: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  line-height: 45px;
+  padding:7px 15px 0px 15px;
+  color: #fff;
+  border: 0;
+  font-size: 1.4em;
+  font-weight:bold;
+  cursor: pointer;
+  outline: none;
+}
+
+.cross{
+  background: none;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px 15px 0px 15px;
+  color: #fff;
+  border: 0;
+  font-size: 3em;
+  line-height:65px;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+}
+
+
+/******************************
+    RESPONSIVE DESIGN
+*******************************/
+
+@media screen and (max-width: 704px) {
+    .options-box {
+        width: 100%;
+    }
+}
+
+@media screen and (min-width: 705px) and (max-width: 1017px){
+    .options-box {
+        width: 45%;
+    }
+}
+
+@media screen and (min-width: 1018px) {
+    .options-box {
+        width: 30%;
+        max-width: 350px;
+    }
+}
