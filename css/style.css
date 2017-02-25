@@ -45,8 +45,8 @@ header {
 ***********************************/
 
 .title {
-    margin: 0;
-    text-align: center;
+    margin: 0 30px;
+    text-align: left;
     color: #fff;
 }
 

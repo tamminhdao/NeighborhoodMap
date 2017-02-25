@@ -1,10 +1,6 @@
-//Store raw data loaded from 3rd party API
-//A list of SF area ice cream parlors in this case
-var loadedData = [];
-
 //Load data from Foursquare
-function foursquareCall() {
-    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=icecream&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
+function foursquareCall(data) {
+    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
 
     //Handle Error
     var requestTimeout = setTimeout (function(){
@@ -19,23 +15,16 @@ function foursquareCall() {
             clearTimeout (requestTimeout);
 
             var result = response.response.venues;
-            console.log (result);
+
             result.forEach (function (item) {
-                loadedData.push(item);
+                data.push(new Venue(item));
             })
         }
     });
 }
 
-
-
-foursquareCall ();
-console.log ("loadedData Length: " + loadedData.length);
-
-
-
 //Model 
-//constructor function for each ice cream parlor (i.e. Venue instance) to be place on the map
+//constructor function for each yoga studio (i.e. Venue instance) to be place on the map
 var Venue = function (data) {
     var self = this;
     this.name = ko.observable(data.name);
@@ -46,6 +35,9 @@ var Venue = function (data) {
 //ViewModel constructor function
 function ViewModel () {
     var self = this;
+    
+    this.venueList = ko.observableArray([]);
+    foursquareCall(this.venueList);
 
     //Knockout Bindings for the Header
     //assign initial visibility status for the selection icons and the option box
@@ -66,13 +58,6 @@ function ViewModel () {
         self.hamburgerIcon(true);
         self.optionsBox(false);
     };
-
-    //Create and bind Venue instances
-    this.venueList = ko.observableArray([]);
-
-    loadedData.forEach (function (item) {
-        self.venueList.push(new Venue(item));
-    })
 }
 
 var vm = new ViewModel() 
@@ -80,10 +65,6 @@ ko.applyBindings (vm);
 
 // Google Map
 var map;
-var markers = [];
-var defaultIcon;
-var highlightedIcon;
-
 
 function initMap() {
     //style the map
