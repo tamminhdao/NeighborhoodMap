@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>SFEATS</title>
+        <title>Golden Gate Yoga</title>
         <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
@@ -13,8 +13,9 @@
             <h2 class="title">Yoga San Francisco</h2>
         </header>
         <div class="options-box" data-bind="visible: optionsBox">
-            <ul data-bind="foreach: venueList">
-                <li data-bind="text: name"></li>
+            <ul class="list" data-bind="foreach: venueList">
+                <li class="studio" data-bind="text: name, click: $parent.setStudio, 
+                                            css : { selected: $data == $root.selectedStudio() }"></li>
             </ul>
         </div>
         <div id="map"></div>

@@ -1,6 +1,6 @@
 //Load data from Foursquare
 function foursquareCall(data) {
-    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
+    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&limit=30&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
 
     //Handle Error
     var requestTimeout = setTimeout (function(){
@@ -30,20 +30,36 @@ var Venue = function (data) {
     this.name = ko.observable(data.name);
     this.address = ko.observable(data.location.formattedAddress);
     this.phone = ko.observable(data.contact.formattedPhone);
+    this.lat = data.location.lat;
+    this.lng = data.location.lng;
+
+    this.marker = new google.maps.Marker({
+                        title: self.name(),
+                        position: new google.maps.LatLng (self.lat, self.lng),
+                        map: map,
+                        animation: google.maps.Animation.DROP,
+                    })
 }
 
 //ViewModel constructor function
 function ViewModel () {
     var self = this;
     
+    //populate the venueList with data loaded from Foursquare APIs
+    //bind venueList with <ul> to be display on the option menu
     this.venueList = ko.observableArray([]);
     foursquareCall(this.venueList);
 
+    this.selectedStudio = ko.observable ();
+    this.setStudio = function(clickedOption) {
+        self.selectedStudio(clickedOption);
+    }
+
     //Knockout Bindings for the Header
     //assign initial visibility status for the selection icons and the option box
-    this.hamburgerIcon = ko.observable (true);
-    this.crossIcon = ko.observable (false);
-    this.optionsBox = ko.observable (false);
+    this.hamburgerIcon = ko.observable (false);
+    this.crossIcon = ko.observable (true);
+    this.optionsBox = ko.observable (true);
 
     //show options box when click on hamburger icon, alternate between hamburger and cross icons
     this.showOptions = function() {
