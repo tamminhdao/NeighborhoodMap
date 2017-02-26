@@ -1,6 +1,6 @@
 //Load data from Foursquare
-function foursquareCall(data) {
-    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&limit=30&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
+function foursquareCall(dataArray) {
+    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&radius=5000&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
 
     //Handle Error
     var requestTimeout = setTimeout (function(){
@@ -15,9 +15,9 @@ function foursquareCall(data) {
             clearTimeout (requestTimeout);
 
             var result = response.response.venues;
-
+            //push each item of the Foursquare response into venueList array, while conveniently convert them into Venue instances
             result.forEach (function (item) {
-                data.push(new Venue(item));
+                dataArray.push(new Venue(item)); 
             })
         }
     });
@@ -28,17 +28,52 @@ function foursquareCall(data) {
 var Venue = function (data) {
     var self = this;
     this.name = ko.observable(data.name);
-    this.address = ko.observable(data.location.formattedAddress);
-    this.phone = ko.observable(data.contact.formattedPhone);
+    this.address = data.location.address;
+    this.phone = data.contact.formattedPhone;
     this.lat = data.location.lat;
     this.lng = data.location.lng;
 
+        var markerImage = {
+        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ 'ff6666' +
+        '|40|_|%E2%80%A2',
+        size: new google.maps.Size(21, 34),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(10, 34),
+        scaledSize: new google.maps.Size(21, 34)
+        };
+
     this.marker = new google.maps.Marker({
-                        title: self.name(),
+                        title: 'Name: ' + self.name() + '<br><br>'
+                                + 'Address: ' + self.address + '<br><br>' 
+                                + 'Phone: ' + self.phone,
                         position: new google.maps.LatLng (self.lat, self.lng),
                         map: map,
+                        icon: markerImage,
                         animation: google.maps.Animation.DROP,
                     })
+
+    this.toggleBounce = function(marker) {
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(function () {
+            marker.setAnimation(null);
+        }, 2750);
+      }
+
+    this.populateInfoWindow = function (marker, infowindow) {
+        // Check to make sure the infowindow is not already opened on this marker.
+        if (infowindow.marker != marker) {
+            infowindow.marker = marker;
+            infowindow.setContent('<div>' + marker.title + '</div>');
+            infowindow.open(map, marker);
+        }
+    }
+
+    //Create an onclick event to open an infowindow when each marker is clicked
+    this.marker.addListener('click', function() {
+        map.panTo(this.getPosition());
+        self.populateInfoWindow (this, new google.maps.InfoWindow());
+        self.toggleBounce (this);
+    })
 }
 
 //ViewModel constructor function
@@ -129,5 +164,6 @@ function initMap() {
         mapTypeControl: false
     });
 }
+
 
 
