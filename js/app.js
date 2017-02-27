@@ -68,24 +68,25 @@ var Venue = function (data) {
         }, 3500);
       }
 
-    this.populateInfoWindow = function (marker, infowindow) {
+    this.populateInfoWindow = function (infowindow) {
         // Check to make sure the infowindow is not already opened on this marker.
-        if (infowindow.marker != marker) {
-            infowindow.marker = marker;
-            infowindow.setContent('<div>' + marker.title + '</div>');
-            infowindow.open(map, marker);
+        if (infowindow.marker != self.marker) {
+            infowindow.marker = self.marker;
+            infowindow.setContent('<div>' + self.marker.title + '</div>');
+            infowindow.open(map, self.marker);
         }
     }
 
     //Create an onclick event to open an infowindow when each marker is clicked
     this.marker.addListener('click', function() {
-        self.populateInfoWindow (this, new google.maps.InfoWindow());
+        self.populateInfoWindow (new google.maps.InfoWindow());
     })
 
     this.showInfo = function () {
         map.panTo(self.marker.getPosition());
         self.marker.setIcon(selectedMarkerImage);
         self.toggleBounce();
+        self.populateInfoWindow (new google.maps.InfoWindow());
     }
 }
 

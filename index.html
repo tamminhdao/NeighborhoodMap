@@ -15,7 +15,8 @@
         <div class="options-box" data-bind="visible: optionsBox">
             <ul class="list" data-bind="foreach: venueList">
                 <li class="studio" data-bind="text: name, click: $parent.setStudio, 
-                                            css : { selected: $data == $root.selectedStudio() }"></li>
+                                            css : { selected: $data == $root.selectedStudio() }">
+                </li>
             </ul>
         </div>
         <div id="map"></div>
