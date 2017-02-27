@@ -52,9 +52,7 @@ var Venue = function (data) {
         };
     
     this.marker = new google.maps.Marker({
-                        title: 'Name: ' + self.name() + '<br><br>'
-                                + 'Address: ' + self.address + '<br><br>' 
-                                + 'Phone: ' + self.phone,
+                        title: self.name(),
                         position: new google.maps.LatLng (self.lat, self.lng),
                         map: map,
                         icon: markerImage,
@@ -68,38 +66,53 @@ var Venue = function (data) {
         }, 3500);
       }
 
-    this.populateInfoWindow = function (infowindow) {
-        // Check to make sure the infowindow is not already opened on this marker.
-        if (infowindow.marker != self.marker) {
-            infowindow.marker = self.marker;
-            infowindow.setContent('<div>' + self.marker.title + '</div>');
-            infowindow.open(map, self.marker);
-        }
+    this.infowindow = new google.maps.InfoWindow ({
+        content: '<div>' + 'Name: ' + self.name() + '<br><br>'
+                        + 'Address: ' + self.address + '<br><br>' 
+                        + 'Phone: ' + self.phone + '</div>',
+        position: new google.maps.LatLng (self.lat, self.lng),
+        isOpen: false
+    })
+
+    this.openInfoWindow = function () {
+        self.infowindow.open(map, self.marker);
+        self.infowindow.isOpen = true;
+    }
+
+    this.closeInfoWindow = function () {
+        self.infowindow.close(map, self.marker);
+        self.infowindow.isOpen = false;
     }
 
     //Create an onclick event to open an infowindow when each marker is clicked
     this.marker.addListener('click', function() {
-        self.populateInfoWindow (new google.maps.InfoWindow());
+        if (self.infowindow.isOpen == true) {
+            self.closeInfoWindow ();
+            self.marker.setIcon(markerImage);
+        }
+        else
+            self.openInfoWindow();
     })
 
     this.showInfo = function () {
         map.panTo(self.marker.getPosition());
         self.marker.setIcon(selectedMarkerImage);
         self.toggleBounce();
-        self.populateInfoWindow (new google.maps.InfoWindow());
+        self.openInfoWindow();
     }
 }
 
 //ViewModel constructor function
 function ViewModel () {
     var self = this;
-    
+
     //populate the venueList with data loaded from Foursquare APIs
     //bind venueList with <ul> to be display on the option menu
     this.venueList = ko.observableArray([]);
     foursquareCall(this.venueList);
+    //console.log (self.venueList());
 
-    this.selectedStudio = ko.observable (self.venueList()[0]);
+    this.selectedStudio = ko.observable ();
     this.setStudio = function(clickedOption) {
         self.selectedStudio(clickedOption);
         self.selectedStudio().showInfo();
