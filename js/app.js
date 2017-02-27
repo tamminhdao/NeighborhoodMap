@@ -34,7 +34,7 @@ var Venue = function (data) {
     this.lng = data.location.lng;
 
         var markerImage = {
-        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ 'ff6666' +
+        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ '0091ff' +
         '|40|_|%E2%80%A2',
         size: new google.maps.Size(21, 34),
         origin: new google.maps.Point(0, 0),
@@ -42,6 +42,15 @@ var Venue = function (data) {
         scaledSize: new google.maps.Size(21, 34)
         };
 
+        var selectedMarkerImage = {
+        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ 'ff6666' +
+        '|40|_|%E2%80%A2',
+        size: new google.maps.Size(21, 34),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(10, 34),
+        scaledSize: new google.maps.Size(21, 34)
+        };
+    
     this.marker = new google.maps.Marker({
                         title: 'Name: ' + self.name() + '<br><br>'
                                 + 'Address: ' + self.address + '<br><br>' 
@@ -52,11 +61,11 @@ var Venue = function (data) {
                         animation: google.maps.Animation.DROP,
                     })
 
-    this.toggleBounce = function(marker) {
-        marker.setAnimation(google.maps.Animation.BOUNCE);
+    this.toggleBounce = function() {
+        self.marker.setAnimation(google.maps.Animation.BOUNCE);
         setTimeout(function () {
-            marker.setAnimation(null);
-        }, 2750);
+            self.marker.setAnimation(null);
+        }, 3500);
       }
 
     this.populateInfoWindow = function (marker, infowindow) {
@@ -70,10 +79,14 @@ var Venue = function (data) {
 
     //Create an onclick event to open an infowindow when each marker is clicked
     this.marker.addListener('click', function() {
-        map.panTo(this.getPosition());
         self.populateInfoWindow (this, new google.maps.InfoWindow());
-        self.toggleBounce (this);
     })
+
+    this.showInfo = function () {
+        map.panTo(self.marker.getPosition());
+        self.marker.setIcon(selectedMarkerImage);
+        self.toggleBounce();
+    }
 }
 
 //ViewModel constructor function
@@ -85,9 +98,10 @@ function ViewModel () {
     this.venueList = ko.observableArray([]);
     foursquareCall(this.venueList);
 
-    this.selectedStudio = ko.observable ();
+    this.selectedStudio = ko.observable (self.venueList()[0]);
     this.setStudio = function(clickedOption) {
         self.selectedStudio(clickedOption);
+        self.selectedStudio().showInfo();
     }
 
     //Knockout Bindings for the Header
