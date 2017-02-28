@@ -63,7 +63,7 @@ var Venue = function (data) {
         self.marker.setAnimation(google.maps.Animation.BOUNCE);
         setTimeout(function () {
             self.marker.setAnimation(null);
-        }, 3500);
+        }, 1450);
       }
 
     this.infowindow = new google.maps.InfoWindow ({
@@ -118,6 +118,28 @@ function ViewModel () {
         self.selectedStudio().showInfo();
     }
 
+
+    //Filter
+    this.filter = ko.observable(""); //has to specify type string for lower case method to kick in
+    this.filterByKeyword = ko.computed (function() {
+        var filter_text = self.filter().toLowerCase();
+        if (!filter_text) {
+            return self.venueList();
+        }
+        else {
+            return ko.utils.arrayFilter (self.venueList(), function(venue) {
+                if (venue.name().toLowerCase().includes(filter_text)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            })
+        }
+        //console.log (self.filterByKeyword());
+    }, ViewModel);
+
+
     //Knockout Bindings for the Header
     //assign initial visibility status for the selection icons and the option box
     this.hamburgerIcon = ko.observable (false);
@@ -139,7 +161,7 @@ function ViewModel () {
     };
 }
 
-var vm = new ViewModel() 
+var vm = new ViewModel(); 
 ko.applyBindings (vm);
 
 // Google Map
