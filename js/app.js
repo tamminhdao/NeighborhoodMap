@@ -56,7 +56,7 @@ var Venue = function (data) {
                         position: new google.maps.LatLng (self.lat, self.lng),
                         map: map,
                         icon: markerImage,
-                        animation: google.maps.Animation.DROP,
+                        animation: google.maps.Animation.DROP
                     })
 
     this.toggleBounce = function() {
@@ -124,6 +124,9 @@ function ViewModel () {
     this.filterByKeyword = ko.computed (function() {
         var filter_text = self.filter().toLowerCase();
         if (!filter_text) {
+            self.venueList().forEach (function (venue) {
+                venue.marker.setVisible(true);
+            })
             return self.venueList();
         }
         else {
@@ -132,12 +135,15 @@ function ViewModel () {
                     return true;
                 }
                 else {
+                    venue.marker.setVisible(false);
+                    //close any infowindow previously opened
+                    venue.closeInfoWindow();
                     return false;
                 }
             })
         }
-        //console.log (self.filterByKeyword());
     }, ViewModel);
+
 
 
     //Knockout Bindings for the Header

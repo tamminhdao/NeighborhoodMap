@@ -15,7 +15,7 @@
         <div class="options-box" data-bind="visible: optionsBox">
             <input data-bind="value: filter, valueUpdate: 'keyup'"
                     id="text-input" type="text" placeholder="Filter studio by matching keyword">
-            <ul class="list" data-bind="foreach: venueList">
+            <ul class="list" data-bind="foreach: filterByKeyword">
                 <li class="studio" data-bind="text: name, click: $parent.setStudio, 
                                             css : { selected: $data == $root.selectedStudio() }"></li>
             </ul>
