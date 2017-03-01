@@ -41,15 +41,15 @@ function initMap() {
         }
     ];
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 37.77733, lng: -122.441415}, //Panhandle
-        //center: {lat: 37.77926, lng: -122.419265}, //City Hall
+        //center: {lat: 37.77733, lng: -122.441415}, //Panhandle
+        center: {lat: 37.776259, lng: -122.432758}, //Painted Lady
         zoom: 14,
         styles: styles,
         mapTypeControl: false
     });
-
+/*
     //this did not turn out well. zoom is way off
-    /*var bounds = new google.maps.LatLngBounds();
+    var bounds = new google.maps.LatLngBounds();
     vm.venueList().forEach (function (venue) {
          bounds.extend(venue.marker.position);
     })
@@ -59,7 +59,7 @@ function initMap() {
 
 //Load data from Foursquare
 function foursquareCall(dataArray) {
-    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&radius=5000&limit=17&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
+    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&radius=5000&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
 
     //Handle Error
     var requestTimeout = setTimeout (function(){
@@ -156,6 +156,7 @@ var Venue = function (data) {
     this.showInfo = function () {
         map.panTo(self.marker.getPosition());
         self.marker.setIcon(selectedMarkerImage);
+        self.marker.setVisible(true);
         self.toggleBounce();
         self.openInfoWindow();
     }
@@ -174,13 +175,15 @@ function ViewModel () {
     this.selectedStudio = ko.observable ();
     this.setStudio = function(clickedOption) {
         self.selectedStudio(clickedOption);
-        self.selectedStudio().showInfo();
+        if (clickedOption !== null) {
+            self.selectedStudio().showInfo();
+        }
     }
-
-    this.resetMap = function () {
+    
+    this.recenterMap = function () {
         map.panTo(new google.maps.LatLng (37.77733, -122.44141));
     }
-
+    
     //Filter
     this.filter = ko.observable(""); //has to specify type string for lower case method to kick in
     this.filterByKeyword = ko.computed (function() {
@@ -189,7 +192,10 @@ function ViewModel () {
             self.venueList().forEach (function (venue) {
                 venue.marker.setVisible(true);
             })
-            self.resetMap();
+            //make sure the Google Maps API is finished loading or var map is considered undefined
+            if (map !== undefined) {
+                self.recenterMap();
+            }
             return self.venueList();
         }
         else {
@@ -206,6 +212,13 @@ function ViewModel () {
             })
         }
     }, ViewModel);
+
+    this.pageRefresh = function() {
+        //recenter the map
+        self.recenterMap();
+        //remove any selected list item
+        self.setStudio(null);
+    }
 
     //Knockout Bindings for the Header
     //assign initial visibility status for the selection icons and the option box

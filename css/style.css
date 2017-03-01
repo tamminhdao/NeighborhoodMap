@@ -69,7 +69,7 @@ header {
   position: absolute;
   top: 0;
   right: 0;
-  padding: 10px 15px 0px 15px;
+  padding: 13px 15px 0px 15px;
   color: #fff;
   border: 0;
   font-size: 3em;
@@ -77,6 +77,20 @@ header {
   font-weight: bold;
   cursor: pointer;
   outline: none;
+}
+
+.refresh {
+    background: none;
+    position: absolute;
+    top: 0px;
+    right: 30px;
+    padding: 10px 15px 0px 15px;
+    color: #fff;
+    border: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
 }
 
 /******************************
@@ -90,7 +104,9 @@ header {
 .studio {
     list-style-type: none;
     cursor: pointer;
-    padding-left: 30px;
+    padding: 10px;
+    border: 1px;
+    border-style: none none solid none;
 }
 
 .selected {
@@ -100,29 +116,42 @@ header {
 }
 
 #text-input {
-    width: 90%;
-    margin: 0 20px;
+    font-style: italic;
+    border-radius: 10px;
+    border-style: hidden;
+    padding: 4px;
+    margin: 20px;
+    width: 80%;
+    height: 20px;
 }
 
 /******************************
     RESPONSIVE DESIGN
 *******************************/
 
-@media screen and (max-width: 704px) {
+@media screen and (max-width: 450px) {
     .options-box {
-        width: 80%;
+        width: 70%;
     }
 }
 
-@media screen and (min-width: 705px) and (max-width: 1017px){
+@media screen and (min-width:451px) and (max-width: 665px) {
+    .options-box {
+        width: 50%;
+        max-width: 350px;
+    }
+}
+
+@media screen and (min-width:666px) and (max-width: 800px) {
     .options-box {
         width: 40%;
+        max-width: 350px;
     }
 }
 
-@media screen and (min-width: 1018px) {
+@media screen and (min-width: 801px) {
     .options-box {
         width: 30%;
-        max-width: 350px;
+        max-width: 300px;
     }
 }
