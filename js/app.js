@@ -1,6 +1,65 @@
+// Google Map
+var map;
+
+function initMap() {
+    //style the map
+    var styles = [
+        {
+            featureType: 'poi',
+            elementType: 'poi.attraction',
+            stylers : [
+                { weight: 10 }
+            ]
+        },
+        {
+            featureType: 'poi',
+            elementType: 'poi.park',
+            stylers : [
+                { weight: 9 }
+            ]
+        },
+        {
+            featureType: 'road',
+            elementType: 'road.highway',
+            stylers : [
+                { visibility: 'simplified' }
+            ]
+        },
+        {
+            featureType: 'road.highway',
+            elementType: 'labels.icon',
+            stylers: [
+              { visibility: 'off' }
+            ]
+        },
+        {
+            featureType: 'administrative',
+            elementType: 'administrative.neighborhood',
+            stylers : [
+                { visibility: 'off' }
+            ]
+        }
+    ];
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 37.77733, lng: -122.441415}, //Panhandle
+        //center: {lat: 37.77926, lng: -122.419265}, //City Hall
+        zoom: 14,
+        styles: styles,
+        mapTypeControl: false
+    });
+
+    //this did not turn out well. zoom is way off
+    /*var bounds = new google.maps.LatLngBounds();
+    vm.venueList().forEach (function (venue) {
+         bounds.extend(venue.marker.position);
+    })
+    map.fitBounds(bounds);*/
+}
+
+
 //Load data from Foursquare
 function foursquareCall(dataArray) {
-    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&radius=5000&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
+    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&radius=5000&limit=17&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
 
     //Handle Error
     var requestTimeout = setTimeout (function(){
@@ -118,6 +177,9 @@ function ViewModel () {
         self.selectedStudio().showInfo();
     }
 
+    this.resetMap = function () {
+        map.panTo(new google.maps.LatLng (37.77733, -122.44141));
+    }
 
     //Filter
     this.filter = ko.observable(""); //has to specify type string for lower case method to kick in
@@ -127,6 +189,7 @@ function ViewModel () {
             self.venueList().forEach (function (venue) {
                 venue.marker.setVisible(true);
             })
+            self.resetMap();
             return self.venueList();
         }
         else {
@@ -143,8 +206,6 @@ function ViewModel () {
             })
         }
     }, ViewModel);
-
-
 
     //Knockout Bindings for the Header
     //assign initial visibility status for the selection icons and the option box
@@ -169,57 +230,3 @@ function ViewModel () {
 
 var vm = new ViewModel(); 
 ko.applyBindings (vm);
-
-// Google Map
-var map;
-
-function initMap() {
-    //style the map
-    var styles = [
-        {
-            featureType: 'poi',
-            elementType: 'poi.attraction',
-            stylers : [
-                { weight: 10 }
-            ]
-        },
-        {
-            featureType: 'poi',
-            elementType: 'poi.park',
-            stylers : [
-                { weight: 9 }
-            ]
-        },
-        {
-            featureType: 'road',
-            elementType: 'road.highway',
-            stylers : [
-                { visibility: 'simplified' }
-            ]
-        },
-        {
-            featureType: 'road.highway',
-            elementType: 'labels.icon',
-            stylers: [
-              { visibility: 'off' }
-            ]
-        },
-        {
-            featureType: 'administrative',
-            elementType: 'administrative.neighborhood',
-            stylers : [
-                { visibility: 'off' }
-            ]
-        }
-    ];
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 37.77733, lng: -122.441415}, //Panhandle
-        //center: {lat: 37.77926, lng: -122.419265}, //City Hall
-        zoom: 14,
-        styles: styles,
-        mapTypeControl: false
-    });
-}
-
-
-
