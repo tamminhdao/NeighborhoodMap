@@ -41,19 +41,12 @@ function initMap() {
         }
     ];
     map = new google.maps.Map(document.getElementById('map'), {
-        //center: {lat: 37.77733, lng: -122.441415}, //Panhandle
-        center: {lat: 37.776259, lng: -122.432758}, //Painted Lady
+        center: {lat: 37.77733, lng: -122.441415}, //Panhandle
+        //center: {lat: 37.776259, lng: -122.432758}, //Painted Lady
         zoom: 14,
         styles: styles,
         mapTypeControl: false
     });
-/*
-    //this did not turn out well. zoom is way off
-    var bounds = new google.maps.LatLngBounds();
-    vm.venueList().forEach (function (venue) {
-         bounds.extend(venue.marker.position);
-    })
-    map.fitBounds(bounds);*/
 }
 
 
@@ -78,6 +71,12 @@ function foursquareCall(dataArray) {
             result.forEach (function (item) {
                 dataArray.push(new Venue(item)); 
             })
+            //extend map bounds to include all markers on the screen
+            var bounds = new google.maps.LatLngBounds();
+            dataArray().forEach (function (venue) {
+                bounds.extend(venue.marker.position);
+            })
+            map.fitBounds(bounds);
         }
     });
 }
@@ -160,6 +159,12 @@ var Venue = function (data) {
         self.toggleBounce();
         self.openInfoWindow();
     }
+
+    this.resetMarker = function() {
+        self.marker.setIcon(markerImage);
+        self.marker.setVisible(true);
+        self.closeInfoWindow();
+    }
 }
 
 //ViewModel constructor function
@@ -179,26 +184,16 @@ function ViewModel () {
             self.selectedStudio().showInfo();
         }
     }
-    
+
     this.recenterMap = function () {
         map.panTo(new google.maps.LatLng (37.77733, -122.44141));
     }
-    
+
     //Filter
     this.filter = ko.observable(""); //has to specify type string for lower case method to kick in
     this.filterByKeyword = ko.computed (function() {
-        var filter_text = self.filter().toLowerCase();
-        if (!filter_text) {
-            self.venueList().forEach (function (venue) {
-                venue.marker.setVisible(true);
-            })
-            //make sure the Google Maps API is finished loading or var map is considered undefined
-            if (map !== undefined) {
-                self.recenterMap();
-            }
-            return self.venueList();
-        }
-        else {
+        if (self.filter() !== null) {
+            var filter_text = self.filter().toLowerCase();
             return ko.utils.arrayFilter (self.venueList(), function(venue) {
                 if (venue.name().toLowerCase().includes(filter_text)) {
                     return true;
@@ -211,14 +206,17 @@ function ViewModel () {
                 }
             })
         }
+        else {
+            self.venueList().forEach (function (venue) {
+                venue.marker.setVisible(true);
+            })
+            //make sure the Google Maps API is finished loading or var map is considered undefined
+            if (map !== undefined) {
+                self.recenterMap();
+            }
+            return self.venueList();
+        }
     }, ViewModel);
-
-    this.pageRefresh = function() {
-        //recenter the map
-        self.recenterMap();
-        //remove any selected list item
-        self.setStudio(null);
-    }
 
     //Knockout Bindings for the Header
     //assign initial visibility status for the selection icons and the option box
@@ -239,6 +237,19 @@ function ViewModel () {
         self.hamburgerIcon(true);
         self.optionsBox(false);
     };
+
+    this.pageRefresh = function() {
+        //recenter the map
+        self.recenterMap();
+        //remove any selected list item
+        self.setStudio(null);
+        //reset filter text-box
+        self.filter(null);
+        //reset all markers
+        self.venueList().forEach (function (venue) {
+            venue.resetMarker();
+        })
+    }
 }
 
 var vm = new ViewModel(); 
