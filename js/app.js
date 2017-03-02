@@ -49,38 +49,40 @@ function initMap() {
     });
 }
 
+//Error handling for Google Maps APIs
+function errorHandling () {
+    var notice = '<h1 align="center"> GOOGLE MAPS DOESN\'T WORK!</h1>';
+    notice += '<h1 align="center"> Please try again later! </h1>'
+    $('.options-box').append(notice);
+    $('#map').append(notice);
+}
 
 //Load data from Foursquare
 function foursquareCall(dataArray) {
-    var foursquareUrl = "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&radius=5000&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203";
-
-    //Handle Error
-    var requestTimeout = setTimeout (function(){
-        window.alert ("Foursquare is taking longer than usual to response.");
-    }, 5000); //wait 5 sec
-
     $.ajax({
-        url: foursquareUrl,
+        method: "GET",
+        url: "https://api.foursquare.com/v2/venues/search?ll=37.77926,-122.419265&query=yoga&radius=5000&client_id=POWMWFWIJYX2DYSPVDZGWUALNC4RON5ROTEPHNDZKIYOTUTR&client_secret=PHC4Z52PPQJM5SMCLNN4UAGVYW5PQIKOWX23FDQWLCVB3J3S&v=20170203",
         dataType: 'jsonp',
-        success: function (response) {
-            //If ajax resquest went through, abort error alert
-            clearTimeout (requestTimeout);
-
-            var result = response.response.venues;
-            //push each item of the Foursquare response into venueList array, while conveniently convert them into Venue instances
-            result.forEach (function (item) {
-                dataArray.push(new Venue(item)); 
-            });
-            //extend map bounds to include all markers on the screen
-            var bounds = new google.maps.LatLngBounds();
-            dataArray().forEach (function (venue) {
-                bounds.extend(venue.marker.position);
-            });
-            //make sure map markers always fit on screen as user resizes their browser window
-            google.maps.event.addDomListener(window, 'resize', function() {
-                map.fitBounds(bounds);
-            });
-        }
+    }).done (function (response) {
+        var result = response.response.venues;
+        //push each item of the Foursquare response into venueList array, while conveniently convert them into Venue instances
+        result.forEach (function (item) {
+            dataArray.push(new Venue(item)); 
+        });
+        //extend map bounds to include all markers on the screen
+        var bounds = new google.maps.LatLngBounds();
+        dataArray().forEach (function (venue) {
+            bounds.extend(venue.marker.position);
+        });
+        //make sure map markers always fit on screen as user resizes their browser window
+        google.maps.event.addDomListener(window, 'resize', function() {
+            map.fitBounds(bounds);
+        });
+    }).fail (function(jqXHR, textStatus, errorThrown) {
+        console.log ('Status code: ' + jqXHR.status); 
+        console.log ('Text status: ' + textStatus);
+        console.log ('Error thrown: ' + errorThrown);
+        window.alert ('Cannot retrieve data from Foursquare at the moment!');
     });
 }
 

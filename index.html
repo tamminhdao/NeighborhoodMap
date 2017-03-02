@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>Golden Gate Yoga</title>
+        <title>Neighborhood Map Project</title>
         <link href="css/style.css" rel="stylesheet">
     </head>
     <body>
@@ -11,7 +11,7 @@
             <button class="hamburger" data-bind="visible: hamburgerIcon, click: showOptions">&#9776;</button>
             <button class="cross" data-bind="visible: crossIcon, click: hideOptions">&#735;</button>
             <button class="refresh" data-bind="click: pageRefresh">&#10227;</button>
-            <h2 class="title">Yoga San Francisco</h2>
+            <h2 class="title">Golden Gate Yoga</h2>
         </header>
         <div class="options-box" data-bind="visible: optionsBox">
             <input data-bind="value: filter, valueUpdate: 'keyup'"
@@ -25,8 +25,10 @@
     <!-- Hook up with js libs and files -->
     <script src="js/lib/knockout-3.4.1.js"></script>
     <script src="js/lib/jquery-3.1.1.min.js"></script>
+    <!--Load the app's JS file before starting loading map asynchronously to make sure that Map's callback function or error function is ready to be called-->
     <script src="js/app.js"></script>
     <script async defer
+        onerror="errorHandling()"
         src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyDZxxM48htFpA11dooqdDV49iOxb8MUigc&v=3&callback=initMap">
     </script>
     </body>
