@@ -17,14 +17,13 @@ To explore the codebase:
 
 ### App functionalities
 1. The app collects data using Google Maps APIs and Foursquare APIs.
-2. The map automatically adjust bounds and zoom to accommodate all markers.
-3. The app also adapts to different viewports.
+2. The app notifies users if an error occurs. 
+3. The map automatically adapts to different viewports, adjusts bounds and zooms to accommodate all markers.
 4. The menu opens by default vertically on the left hand side. 
     This menu can be opened or closed with the hamburger/ cross icons on the header upper right-hand side.
 5. The list of venues can be filtered by entering specific keyword in the textbox.
     Filtering the list also results in filtering corresponding markers on the map.
 6. When a venue item on the list menu is selected, its marker changes color and bounces on the map.
      The marker's infowindow also opens to reveal more infomation.
-7. Infowindow can be opened or closed by clicking dirrectly on a marker.
-8. Refresh the app by clicking on the refresh icon on the header upper right-hand side.
+7. Refresh the app by clicking on the refresh icon on the header upper right-hand side.
 

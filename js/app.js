@@ -1,5 +1,6 @@
 // Google Map
 var map;
+var oneWindow;
 
 function initMap() {
     //style the map
@@ -47,6 +48,10 @@ function initMap() {
         styles: styles,
         mapTypeControl: false
     });
+
+    //initiate just one instance of infowindow to share among all markers
+    //oneWindow pops up and sets its content according to the chosen marker
+    oneWindow = new google.maps.InfoWindow ();
 }
 
 //Error handling for Google Maps APIs
@@ -93,6 +98,7 @@ var Venue = function (data) {
     this.name = ko.observable(data.name) || 'No name provided';
     this.address = data.location.address || 'No address provided';
     this.phone = data.contact.formattedPhone || 'No phone number provided';
+    this.url = data.url || 'No website provided';
     this.lat = data.location.lat;
     this.lng = data.location.lng;
 
@@ -122,6 +128,18 @@ var Venue = function (data) {
         animation: google.maps.Animation.DROP
     });
 
+    this.marker.addListener('click', function() {
+        self.openInfoWindow();
+        self.toggleBounce();
+    });
+
+    this.marker.addListener('mouseover', function() {
+        self.marker.setIcon(selectedMarkerImage);
+    });
+    this.marker.addListener ('mouseout', function() {
+        self.marker.setIcon(markerImage);
+    });
+
     this.toggleBounce = function() {
         self.marker.setAnimation(google.maps.Animation.BOUNCE);
         setTimeout(function () {
@@ -129,34 +147,14 @@ var Venue = function (data) {
         }, 1400);
       };
 
-    this.infowindow = new google.maps.InfoWindow ({
-        content: '<div>' + 'Name: ' + self.name() + '<br><br>'
-                        + 'Address: ' + self.address + '<br><br>' 
-                        + 'Phone: ' + self.phone + '</div>',
-        position: new google.maps.LatLng (self.lat, self.lng),
-        isOpen: false
-    });
-
-    this.openInfoWindow = function () {
-        self.infowindow.open(map, self.marker);
-        self.infowindow.isOpen = true;
+    //Each venue has its own marker but all share one infowindow (oneWindow)
+    this.openInfoWindow = function() {
+        oneWindow.open (map, self.marker);
+        oneWindow.setContent ('<div>' + 'Name: ' + self.name() + '<br><br>'
+                                    + 'Address: ' + self.address + '<br><br>' 
+                                    + 'Phone: ' + self.phone + '<br><br>' 
+                                    + 'Website: <a href="' + self.url + '">' + self.url + '</a></div>');
     };
-
-    this.closeInfoWindow = function () {
-        self.infowindow.close(map, self.marker);
-        self.infowindow.isOpen = false;
-    };
-
-    //Create an onclick event to open an infowindow when each marker is clicked
-    this.marker.addListener('click', function() {
-        if (self.infowindow.isOpen === true) {
-            self.closeInfoWindow ();
-            self.marker.setIcon(markerImage);
-        }
-        else
-            self.openInfoWindow();
-            self.toggleBounce();
-    });
 
     this.showInfo = function () {
         map.panTo(self.marker.getPosition());
@@ -169,7 +167,6 @@ var Venue = function (data) {
     this.resetMarker = function() {
         self.marker.setIcon(markerImage);
         self.marker.setVisible(true);
-        self.closeInfoWindow();
     };
 }
 
@@ -206,8 +203,8 @@ function ViewModel () {
                 }
                 else {
                     venue.marker.setVisible(false);
-                    //close any infowindow previously opened
-                    venue.closeInfoWindow();
+                    //close infowindow if it's opened
+                    oneWindow.close(map, self.marker);
                     return false;
                 }
             });
@@ -252,6 +249,8 @@ function ViewModel () {
         self.setStudio(null);
         //reset filter text-box
         self.filter("");
+        //close infowindow if it's opened
+        oneWindow.close(map, self.marker);
         //reset all markers
         self.venueList().forEach (function (venue) {
             venue.resetMarker();
