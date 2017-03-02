@@ -91,31 +91,31 @@ var Venue = function (data) {
     this.lat = data.location.lat;
     this.lng = data.location.lng;
 
-        var markerImage = {
-        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ '0091ff' +
-        '|40|_|%E2%80%A2',
-        size: new google.maps.Size(21, 34),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(10, 34),
-        scaledSize: new google.maps.Size(21, 34)
-        };
+    var markerImage = {
+    url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ '0091ff' +
+    '|40|_|%E2%80%A2',
+    size: new google.maps.Size(21, 34),
+    origin: new google.maps.Point(0, 0),
+    anchor: new google.maps.Point(10, 34),
+    scaledSize: new google.maps.Size(21, 34)
+    };
 
-        var selectedMarkerImage = {
-        url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ 'ff6666' +
-        '|40|_|%E2%80%A2',
-        size: new google.maps.Size(21, 34),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(10, 34),
-        scaledSize: new google.maps.Size(21, 34)
-        };
-    
+    var selectedMarkerImage = {
+    url: 'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ 'ff6666' +
+    '|40|_|%E2%80%A2',
+    size: new google.maps.Size(21, 34),
+    origin: new google.maps.Point(0, 0),
+    anchor: new google.maps.Point(10, 34),
+    scaledSize: new google.maps.Size(21, 34)
+    };
+
     this.marker = new google.maps.Marker({
-                        title: self.name(),
-                        position: new google.maps.LatLng (self.lat, self.lng),
-                        map: map,
-                        icon: markerImage,
-                        animation: google.maps.Animation.DROP
-                    })
+        title: self.name(),
+        position: new google.maps.LatLng (self.lat, self.lng),
+        map: map,
+        icon: markerImage,
+        animation: google.maps.Animation.DROP
+    })
 
     this.toggleBounce = function() {
         self.marker.setAnimation(google.maps.Animation.BOUNCE);

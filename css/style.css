@@ -138,20 +138,20 @@ header {
 @media screen and (min-width:451px) and (max-width: 665px) {
     .options-box {
         width: 50%;
-        max-width: 350px;
+        max-width: 300px;
     }
 }
 
 @media screen and (min-width:666px) and (max-width: 800px) {
     .options-box {
         width: 40%;
-        max-width: 350px;
+        max-width: 300px;
     }
 }
 
 @media screen and (min-width: 801px) {
     .options-box {
         width: 30%;
-        max-width: 300px;
+        max-width: 350px;
     }
 }
