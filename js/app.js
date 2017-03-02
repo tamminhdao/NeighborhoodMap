@@ -70,13 +70,16 @@ function foursquareCall(dataArray) {
             //push each item of the Foursquare response into venueList array, while conveniently convert them into Venue instances
             result.forEach (function (item) {
                 dataArray.push(new Venue(item)); 
-            })
+            });
             //extend map bounds to include all markers on the screen
             var bounds = new google.maps.LatLngBounds();
             dataArray().forEach (function (venue) {
                 bounds.extend(venue.marker.position);
-            })
-            map.fitBounds(bounds);
+            });
+            //make sure map markers always fit on screen as user resizes their browser window
+            google.maps.event.addDomListener(window, 'resize', function() {
+                map.fitBounds(bounds);
+            });
         }
     });
 }
@@ -85,9 +88,9 @@ function foursquareCall(dataArray) {
 //constructor function for each yoga studio (i.e. Venue instance) to be place on the map
 var Venue = function (data) {
     var self = this;
-    this.name = ko.observable(data.name);
-    this.address = data.location.address;
-    this.phone = data.contact.formattedPhone;
+    this.name = ko.observable(data.name) || 'No name provided';
+    this.address = data.location.address || 'No address provided';
+    this.phone = data.contact.formattedPhone || 'No phone number provided';
     this.lat = data.location.lat;
     this.lng = data.location.lng;
 
@@ -115,14 +118,14 @@ var Venue = function (data) {
         map: map,
         icon: markerImage,
         animation: google.maps.Animation.DROP
-    })
+    });
 
     this.toggleBounce = function() {
         self.marker.setAnimation(google.maps.Animation.BOUNCE);
         setTimeout(function () {
             self.marker.setAnimation(null);
-        }, 1450);
-      }
+        }, 1400);
+      };
 
     this.infowindow = new google.maps.InfoWindow ({
         content: '<div>' + 'Name: ' + self.name() + '<br><br>'
@@ -130,27 +133,28 @@ var Venue = function (data) {
                         + 'Phone: ' + self.phone + '</div>',
         position: new google.maps.LatLng (self.lat, self.lng),
         isOpen: false
-    })
+    });
 
     this.openInfoWindow = function () {
         self.infowindow.open(map, self.marker);
         self.infowindow.isOpen = true;
-    }
+    };
 
     this.closeInfoWindow = function () {
         self.infowindow.close(map, self.marker);
         self.infowindow.isOpen = false;
-    }
+    };
 
     //Create an onclick event to open an infowindow when each marker is clicked
     this.marker.addListener('click', function() {
-        if (self.infowindow.isOpen == true) {
+        if (self.infowindow.isOpen === true) {
             self.closeInfoWindow ();
             self.marker.setIcon(markerImage);
         }
         else
             self.openInfoWindow();
-    })
+            self.toggleBounce();
+    });
 
     this.showInfo = function () {
         map.panTo(self.marker.getPosition());
@@ -158,13 +162,13 @@ var Venue = function (data) {
         self.marker.setVisible(true);
         self.toggleBounce();
         self.openInfoWindow();
-    }
+    };
 
     this.resetMarker = function() {
         self.marker.setIcon(markerImage);
         self.marker.setVisible(true);
         self.closeInfoWindow();
-    }
+    };
 }
 
 //ViewModel constructor function
@@ -183,16 +187,16 @@ function ViewModel () {
         if (clickedOption !== null) {
             self.selectedStudio().showInfo();
         }
-    }
+    };
 
     this.recenterMap = function () {
         map.panTo(new google.maps.LatLng (37.77733, -122.44141));
-    }
+    };
 
     //Filter
     this.filter = ko.observable(""); //has to specify type string for lower case method to kick in
     this.filterByKeyword = ko.computed (function() {
-        if (self.filter() !== null) {
+        if (self.filter() !== "") {
             var filter_text = self.filter().toLowerCase();
             return ko.utils.arrayFilter (self.venueList(), function(venue) {
                 if (venue.name().toLowerCase().includes(filter_text)) {
@@ -204,12 +208,12 @@ function ViewModel () {
                     venue.closeInfoWindow();
                     return false;
                 }
-            })
+            });
         }
         else {
             self.venueList().forEach (function (venue) {
                 venue.marker.setVisible(true);
-            })
+            });
             //make sure the Google Maps API is finished loading or var map is considered undefined
             if (map !== undefined) {
                 self.recenterMap();
@@ -217,6 +221,7 @@ function ViewModel () {
             return self.venueList();
         }
     }, ViewModel);
+
 
     //Knockout Bindings for the Header
     //assign initial visibility status for the selection icons and the option box
@@ -244,12 +249,12 @@ function ViewModel () {
         //remove any selected list item
         self.setStudio(null);
         //reset filter text-box
-        self.filter(null);
+        self.filter("");
         //reset all markers
         self.venueList().forEach (function (venue) {
             venue.resetMarker();
-        })
-    }
+        });
+    };
 }
 
 var vm = new ViewModel(); 
