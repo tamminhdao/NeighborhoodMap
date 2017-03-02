@@ -204,7 +204,7 @@ function ViewModel () {
                 else {
                     venue.marker.setVisible(false);
                     //close infowindow if it's opened
-                    oneWindow.close(map, self.marker);
+                    oneWindow.close();
                     return false;
                 }
             });
@@ -250,7 +250,7 @@ function ViewModel () {
         //reset filter text-box
         self.filter("");
         //close infowindow if it's opened
-        oneWindow.close(map, self.marker);
+        oneWindow.close();
         //reset all markers
         self.venueList().forEach (function (venue) {
             venue.resetMarker();
